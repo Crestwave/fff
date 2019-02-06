@@ -354,8 +354,13 @@ draw_dir() {
 draw_img() {
     # Draw an image file on the screen using w3m-img.
     # We can use the framebuffer; set win_info_cmd as appropriate.
-    [[ $(tty) == /dev/tty[0-9]* && -w /dev/fb0 ]] &&
-        win_info_cmd="fbset"
+    [[ $(tty) == /dev/tty[0-9]* ]] && {
+        if [[ -w /dev/fb0 ]]; then
+            win_info_cmd="fbset"
+        else
+            cmd_line "error: You do not have write access to the framebuffer."
+        fi
+    }
 
     # X isn't running and we can't use the framebuffer, do nothing.
     [[ -z $DISPLAY && $win_info_cmd != fbset ]] &&
